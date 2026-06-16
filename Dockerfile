@@ -11,9 +11,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 # NEXT_PUBLIC_* must be present at build time to be inlined into the client bundle.
+# Promote the build ARGs to ENV so `next build` (a child process) can read them.
 ARG NEXT_PUBLIC_RAZORPAY_KEY_ID
-ARG NEXT_PUBLIC_APP_NAME
+ARG NEXT_PUBLIC_APP_NAME="GovPath Academy"
 ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_RAZORPAY_KEY_ID=$NEXT_PUBLIC_RAZORPAY_KEY_ID
+ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 RUN npm run build
 
 # ---------- runner ----------

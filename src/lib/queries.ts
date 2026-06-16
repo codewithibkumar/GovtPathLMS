@@ -24,6 +24,7 @@ type Filters = {
 
 /** Catalog query: only approved + published courses, newest first. */
 export async function getPublishedCourses(filters: Filters = {}): Promise<CourseCardData[]> {
+  try {
   await connectDB();
   ensureModels();
 
@@ -55,10 +56,16 @@ export async function getPublishedCourses(filters: Filters = {}): Promise<Course
     enrollmentCount: c.enrollmentCount,
     ratingAvg: c.ratingAvg,
   }));
+  } catch (err) {
+    // Don't crash the public site if the DB is unreachable — show empty state.
+    console.error("[getPublishedCourses] DB error:", err);
+    return [];
+  }
 }
 
 /** Full course detail with instructor + curriculum (modules -> lessons). */
 export async function getCourseBySlug(slug: string) {
+  try {
   await connectDB();
   ensureModels();
 
@@ -108,4 +115,8 @@ export async function getCourseBySlug(slug: string) {
     curriculum,
     totalLessons: lessons.length,
   };
+  } catch (err) {
+    console.error("[getCourseBySlug] DB error:", err);
+    return null;
+  }
 }
